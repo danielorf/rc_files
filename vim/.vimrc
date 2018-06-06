@@ -13,3 +13,6 @@ autocmd VimEnter * wincmd p
 
 " Auto-closes NERDTree when closing other tab:  https://github.com/scrooloose/nerdtree/issues/21
 autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+" Line numbers on by default
+set number
