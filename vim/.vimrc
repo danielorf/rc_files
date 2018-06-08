@@ -16,3 +16,6 @@ autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isT
 
 " Line numbers on by default
 set number
+
+"Auto convert tab to 2 spaces for yaml files
+autocmd FileType yaml setlocal shiftwidth=2 tabstop=2
