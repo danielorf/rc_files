@@ -1,4 +1,4 @@
-# rc File Readme
+# Config Files Readme
 
 ## Using vimrc
 In your ~/.vimrc, add the following line::
