@@ -19,3 +19,7 @@ set number
 
 "Auto convert tab to 2 spaces for yaml files
 autocmd FileType yaml setlocal shiftwidth=2 tabstop=2
+
+" Testing these features:
+" let NERDTreeMinimalUI = 1
+let NERDTreeDirArrows = 1

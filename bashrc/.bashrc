@@ -108,29 +108,53 @@ function vpn() {
 # Function to easily ssh into the various nodes of a default Kubic devenv
 function cssh() {
   case $* in
-    a|admin*     ) echo -en "\033];caasp-admin\a"   ; ssh root@10.17.1.0; rtitle; ;;
-    m|m0|master* ) echo -en "\033];caasp-master-0\a"; ssh root@10.17.2.0; rtitle; ;;
-    w0|worker0*  ) echo -en "\033];caasp-worker-0\a"; ssh root@10.17.3.0; rtitle; ;;
-    w1|worker1*  ) echo -en "\033];caasp-worker-1\a"; ssh root@10.17.3.1; rtitle; ;;
+    a|admin*     ) echo -en "\033];caasp-admin\a"   ; ssh root@admin0; rtitle; ;;
+    m|m0|master* ) echo -en "\033];caasp-master-0\a"; ssh root@master0; rtitle; ;;
+    w0|worker0*  ) echo -en "\033];caasp-worker-0\a"; ssh root@worker0; rtitle; ;;
+    w1|worker1*  ) echo -en "\033];caasp-worker-1\a"; ssh root@worker1; rtitle; ;;
     my|mysql     ) echo -en "\033];mysql\a";
-      ssh -t root@10.17.1.0 'docker exec -it \
+      ssh -t root@admin0 'docker exec -it \
         $(docker ps -f name=mariadb --format="{{.ID}}") \
         mysql -u velum -D velum_production --password=$(cat /var/lib/misc/infra-secrets/mariadb-velum-password)'; ;;
     sm|salt-master) echo -en "\033];salt-master\a";
-      ssh -t root@10.17.1.0 'docker exec \
+      ssh -t root@admin0 'docker exec \
         $(docker ps -f name=salt-master --format="{{.ID}}") \
         /bin/bash'; ;;
     v|velum) echo -en "\033];velum dashboard\a";
-      ssh -t root@10.17.1.0 'docker exec -it \
+      ssh -t root@admin0 'docker exec -it \
         $(docker ps -f name=velum-dashboard --format="{{.ID}}") \
         entrypoint.sh /bin/bash'; ;;
     vapi|velum-api)
-      ssh root@10.17.1.0 '\
+      ssh root@admin0 '\
         echo -n "Username: ";\
         cat /var/lib/misc/infra-secrets/velum-internal-api-username;\
         echo -n "Password: ";\
         cat /var/lib/misc/infra-secrets/velum-internal-api-password;\
         ' ;;
+    cov|coverage)
+      export V=`/usr/bin/ssh root@10.17.1.0 'docker ps -f name=velum-dashboard --format="{{.ID}}"'`
+      export VID="${VID%??}";
+      #echo -n "$V" | od -cx
+      #echo "Velum POD id = $V";
+      # Create a tarball of coverage within velum pod
+      ssh root@10.17.1.0 "docker exec $V \
+        tar -czf /tmp/coverage.tgz /srv/velum/public/coverage 2>/dev/null";
+      # Copy the tarball into admin node /tmp
+      ssh root@10.17.1.0 "docker cp \
+        $V:/tmp/coverage.tgz \
+        /tmp/coverage.tgz";
+      # Delete the tarball from the velum pod
+      ssh root@10.17.1.0 "docker exec $V \
+        rm /tmp/coverage.tgz"
+      # Copy the tarball out of the admin node
+      sftp root@10.17.1.0:/tmp/coverage.tgz /tmp/coverage.tgz;
+      # Extra coverage into /tmp
+      mkdir /tmp/coverage 2>/dev/null;
+      tar -xf /tmp/coverage.tgz -C /tmp/coverage;
+      # Delete the tarball from /tmp and the admin node
+      rm /tmp/coverage.tgz;
+      ssh root@10.17.1.0 rm /tmp/coverage.tgz;
+      ;;
     *) echo 'a | m | w0 | w1'; ;;
   esac
 }
