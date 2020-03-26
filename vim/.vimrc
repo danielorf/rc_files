@@ -1,25 +1,29 @@
-filetype plugin indent on  
+let PLUGIN_DIR = "~/.vim/plugged"
+let PLUGIN_CONFIG_LOCATION = "~/.vim/.plugin_config.vim"
 
-" Using pathogen vim pugin manager:  https://github.com/tpope/vim-pathogen
-execute pathogen#infect()
+" auto-install vim-plug and plugins
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
 
-" Syntax highlighting on by default:  https://stackoverflow.com/questions/11272501/enable-vim-syntax-highlighting-by-default
-syntax on
 
-" Enable NERDTree at vim startup ane move cusror to main window:  
-" https://stackoverflow.com/questions/1447334/how-do-you-add-nerdtree-to-your-vimrc
-autocmd vimenter * NERDTree
-autocmd VimEnter * wincmd p
+call plug#begin()
+Plug 'scrooloose/nerdtree',
+Plug 'racer-rust/vim-racer'
+" Complete install following this: apt install build-essential cmake vim python3-dev
+" apt install build-essential cmake vim python3-dev
+" cd ~/.vim/plugged/youcompleteme
+" python3 install.py --all
+Plug 'valloric/youcompleteme'
+call plug#end()
 
-" Auto-closes NERDTree when closing other tab:  https://github.com/scrooloose/nerdtree/issues/21
-autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+if !empty(globpath(PLUGIN_DIR, '*'))
+  execute 'source' PLUGIN_CONFIG_LOCATION
+endif
 
-" Line numbers on by default
-set number
+set hidden
+let g:racer_cmd = "/home/dorf/.cargo/bin/racer"
+let g:racer_experimental_completer = 1
+let g:racer_insert_paren = 1
 
-"Auto convert tab to 2 spaces for yaml files
-autocmd FileType yaml setlocal shiftwidth=2 tabstop=2
-
-" Testing these features:
-" let NERDTreeMinimalUI = 1
-let NERDTreeDirArrows = 1
