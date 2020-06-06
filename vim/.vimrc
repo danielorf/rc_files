@@ -1,5 +1,6 @@
 let PLUGIN_DIR = "~/.vim/plugged"
 let PLUGIN_CONFIG_LOCATION = "~/.vim/.plugin_config.vim"
+nnoremap ~ :NERDTreeToggle<CR>
 
 " auto-install vim-plug and plugins
 if empty(glob('~/.vim/autoload/plug.vim'))
@@ -26,4 +27,5 @@ set hidden
 let g:racer_cmd = "/home/dorf/.cargo/bin/racer"
 let g:racer_experimental_completer = 1
 let g:racer_insert_paren = 1
+let g:rustfmt_autosave = 1
 
