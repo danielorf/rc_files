@@ -12,7 +12,7 @@ endif
 call plug#begin()
 Plug 'scrooloose/nerdtree',
 Plug 'racer-rust/vim-racer'
-" Complete install following this: apt install build-essential cmake vim python3-dev
+" Complete install following this:
 " apt install build-essential cmake vim python3-dev
 " cd ~/.vim/plugged/youcompleteme
 " python3 install.py --all
